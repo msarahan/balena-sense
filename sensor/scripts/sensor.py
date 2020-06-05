@@ -8,9 +8,10 @@ import smbus
 import os
 import json
 
-from bme680 import BME680
-from w1therm import W1THERM
-from enviroplushat import ENVIROPLUS
+from .bme680 import BME680
+from .w1therm import W1THERM
+from .enviroplushat import ENVIROPLUS
+from .sma import SMA
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 class balenaSense():
