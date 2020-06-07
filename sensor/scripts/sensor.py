@@ -3,16 +3,17 @@
 # The Sense HAT does not have a gas sensor, and so air quality is approximated using temperature and humidity only.
 
 import sys
-import time
-import smbus
 import os
 import json
 
+import smbus
 from .bme680 import BME680
 from .w1therm import W1THERM
 from .enviroplushat import ENVIROPLUS
 from .sma import SMA
+
 from http.server import HTTPServer, BaseHTTPRequestHandler
+
 
 class balenaSense():
     readfrom = 'unset'
@@ -21,14 +22,13 @@ class balenaSense():
     def __init__(self):
         # First, check for enviro plus hat (since it also has BME on 0x76)
         try:
-            self.bus.write_byte(0x23, 0) # test if we can connect to ADS1015
+            self.bus.write_byte(0x23, 0)  # test if we can connect to ADS1015
         except IOError:
             print('Enviro Plus hat not found')
         else:
             self.readfrom = 'enviroplus'
             self.sensor = ENVIROPLUS()
             print('Found Enviro+ Hat')
-
 
         # Next, check to see if there is a BME680 on the I2C bus
         if self.readfrom == 'unset':
@@ -52,7 +52,6 @@ class balenaSense():
                 self.sensor = BME680(self.readfrom)
                 self.readfrom = 'bme680secondary'
 
-
         # If no BME680, is there a Sense HAT?
         if self.readfrom == 'unset':
             try:
@@ -64,10 +63,9 @@ class balenaSense():
                 print('Using Sense HAT for readings (no gas measurements)')
 
                 # Import the sense hat methods
-                import sense_hat_air_quality
-                from hts221 import HTS221
-                self.sense_hat_reading = lambda: sense_hat_air_quality.get_readings(HTS221())
-
+                from .sense_hat_air_quality import get_readings
+                from .hts221 import HTS221
+                self.sense_hat_reading = lambda: get_readings(HTS221())
 
         # Next, check if there is a 1-wire temperature sensor (e.g. DS18B20)
         if self.readfrom == 'unset':
@@ -84,6 +82,18 @@ class balenaSense():
                 self.readfrom = '1-wire'
                 print('Using 1-wire for readings (temperature only)')
 
+        if self.readfrom == 'unset':
+            try:
+                self.sensor = SMA(ip=os.getenv("BALENASENSE_SOLAR_IP"),
+                                  user=os.getenv("BALENASENSE_SOLAR_USER"),
+                                  password=os.getenv("BALENASENSE_SOLAR_PASSWORD"),
+                                  sensor_id=os.getenv('BALENASENSE_SOLAR_SENSOR'))
+            except:
+                print('SMA solar connection not found')
+            else:
+                self.readfrom = 'sma-solar'
+                print('Using SMA solar connection at IP %s' % self.sensor.ip)
+
         # If this is still unset, no sensors were found; quit!
         if self.readfrom == 'unset':
             print('No suitable sensors found! Exiting.')
@@ -95,22 +105,24 @@ class balenaSense():
         else:
             return self.apply_offsets(self.sensor.get_readings(self.sensor))
 
-
     def apply_offsets(self, measurements):
         # Apply any offsets to the measurements before storing them in the database
         if os.environ.get('BALENASENSE_TEMP_OFFSET') != None:
-            measurements[0]['fields']['temperature'] = measurements[0]['fields']['temperature'] + float(os.environ['BALENASENSE_TEMP_OFFSET'])
+            measurements[0]['fields']['temperature'] = measurements[0]['fields']['temperature'] + float(
+                os.environ['BALENASENSE_TEMP_OFFSET'])
 
         if os.environ.get('BALENASENSE_HUM_OFFSET') != None:
-            measurements[0]['fields']['humidity'] = measurements[0]['fields']['humidity'] + float(os.environ['BALENASENSE_HUM_OFFSET'])
+            measurements[0]['fields']['humidity'] = measurements[0]['fields']['humidity'] + float(
+                os.environ['BALENASENSE_HUM_OFFSET'])
 
         if os.environ.get('BALENASENSE_ALTITUDE') != None:
             # if there's an altitude set (in meters), then apply a barometric pressure offset
             altitude = float(os.environ['BALENASENSE_ALTITUDE'])
-            measurements[0]['fields']['pressure'] = measurements[0]['fields']['pressure'] * (1-((0.0065 * altitude) / (measurements[0]['fields']['temperature'] + (0.0065 * altitude) + 273.15))) ** -5.257
+            measurements[0]['fields']['pressure'] = measurements[0]['fields']['pressure'] * (1 - (
+                        (0.0065 * altitude) / (
+                            measurements[0]['fields']['temperature'] + (0.0065 * altitude) + 273.15))) ** -5.257
 
         return measurements
-
 
 
 class balenaSenseHTTP(BaseHTTPRequestHandler):

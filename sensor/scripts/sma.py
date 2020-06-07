@@ -1,4 +1,6 @@
 import asyncio
+import os
+
 import aiohttp
 import logging
 import sys
@@ -10,15 +12,13 @@ VAR = {}
 _LOGGER = logging.getLogger(__name__)
 
 
-
-
-
 class SMA:
-    def __init__(self, ip, user, password):
+    def __init__(self, ip, user, password, sensor_id='pv_power'):
         logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
         loop = asyncio.get_event_loop()
 
-        self.sensor = 'pv_power'
+        self.sensor = sensor_id if sensor_id else 'pv_power'
+        self.ip = ip
         self._running = False
 
         def _shutdown(*_):
@@ -64,5 +64,7 @@ class SMA:
 
 
 if __name__ == "__main__":
-    sma = SMA(ip="192.168.1.112", user="installer", password="fronius66")
+    sma = SMA(ip=os.getenv("BALENA_SOLAR_IP"),
+              user=os.getenv("BALENA_SOLAR_USER"),
+              password=os.getenv("BALENA_SOLAR_PASSWORD"))
     print(sma.get_readings(sma.sensor))

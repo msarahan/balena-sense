@@ -1,0 +1,67 @@
+{
+  "id": null,
+  "uid": "cLV5GDCkz",
+  "title": "Solar generation",
+  "tags": [],
+  "style": "dark",
+  "timezone": "browser",
+  "editable": true,
+  "hideControls": false,
+  "graphTooltip": 1,
+  "panels": [
+      {
+    "type": "text",
+    "title": "Energy",
+    "gridPos": {
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 9
+    },
+    "id": 1,
+    "mode": "markdown",
+    "content": "# title"
+  },
+    {
+    "type": "text",
+    "title": "Power",
+    "gridPos": {
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 9
+    },
+    "id": 1,
+    "mode": "markdown",
+    "content": "# title"
+  }
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "collapse": false,
+    "enable": true,
+    "notice": false,
+    "now": true,
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1d"
+    ],
+    "status": "Stable",
+    "type": "timepicker"
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "refresh": "5s",
+  "schemaVersion": 17,
+  "version": 0,
+  "links": []
+}

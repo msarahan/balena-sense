@@ -1,12 +1,14 @@
 #!/bin/sh
 
+version="7.0.3"
+
 outfile="/tmp/grafana.deb"
 download_base="https://dl.grafana.com/oss/release/"
 case $1 in
-   rpi)  package_file="grafana-rpi_6.3.6_armhf.deb"
+   rpi)  package_file="grafana-rpi_${version}_armhf.deb"
        ;;
-   aarch64) package_file="grafana_6.3.6_arm64.deb"
+   aarch64) package_file="grafana_${version}_arm64.deb"
        ;;
-   *) package_file="grafana_6.3.6_armhf.deb"
+   *) package_file="grafana_${version}_armhf.deb"
 esac
 wget -O "${outfile}" "${download_base}${package_file}"
