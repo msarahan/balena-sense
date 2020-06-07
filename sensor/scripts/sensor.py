@@ -7,10 +7,6 @@ import os
 import json
 
 import smbus
-from .bme680 import BME680
-from .w1therm import W1THERM
-from .enviroplushat import ENVIROPLUS
-from .sma import SMA
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
@@ -22,77 +18,71 @@ class balenaSense():
     def __init__(self):
         # First, check for enviro plus hat (since it also has BME on 0x76)
         try:
+            from enviroplushat import ENVIROPLUS
             self.bus.write_byte(0x23, 0)  # test if we can connect to ADS1015
-        except IOError:
-            print('Enviro Plus hat not found')
-        else:
             self.readfrom = 'enviroplus'
             self.sensor = ENVIROPLUS()
             print('Found Enviro+ Hat')
+        except IOError:
+            print('Enviro Plus hat not found')
+        except ImportError:
+            print('Import enviroplushat module failed')
 
         # Next, check to see if there is a BME680 on the I2C bus
         if self.readfrom == 'unset':
             try:
+                from bme680 import BME680
                 self.bus.write_byte(0x76, 0)
-            except IOError:
-                print('BME680 not found on 0x76, trying 0x77')
-            else:
                 print('BME680 found on 0x76')
                 self.sensor = BME680(self.readfrom)
                 self.readfrom = 'bme680primary'
-
-        # If we didn't find it on 0x76, look on 0x77
-        if self.readfrom == 'unset':
-            try:
-                self.bus.write_byte(0x77, 0)
             except IOError:
-                print('BME680 not found on 0x77')
-            else:
-                print('BME680 found on 0x77')
-                self.sensor = BME680(self.readfrom)
-                self.readfrom = 'bme680secondary'
+                print('BME680 not found on 0x76, trying 0x77')
+                try:
+                    self.bus.write_byte(0x77, 0)
+                    print('BME680 found on 0x77')
+                    self.sensor = BME680(self.readfrom)
+                    self.readfrom = 'bme680secondary'
+                except IOError:
+                    print('BME680 not found on 0x77')
+            except ImportError:
+                print('Import bme680 module failed')
 
         # If no BME680, is there a Sense HAT?
         if self.readfrom == 'unset':
             try:
                 self.bus.write_byte(0x5F, 0)
-            except:
-                print('Sense HAT not found')
-            else:
                 self.readfrom = 'sense-hat'
                 print('Using Sense HAT for readings (no gas measurements)')
 
                 # Import the sense hat methods
-                from .sense_hat_air_quality import get_readings
-                from .hts221 import HTS221
+                from sense_hat_air_quality import get_readings
+                from hts221 import HTS221
                 self.sense_hat_reading = lambda: get_readings(HTS221())
+            except:
+                print('Sense HAT not found')
 
         # Next, check if there is a 1-wire temperature sensor (e.g. DS18B20)
         if self.readfrom == 'unset':
-            if os.environ.get('BALENASENSE_1WIRE_SENSOR_ID') != None:
-                sensor_id = os.environ['BALENASENSE_1WIRE_SENSOR_ID']
-            else:
-                sensor_id = None
-
             try:
-                self.sensor = W1THERM(sensor_id)
-            except:
-                print('1-wire sensor not found')
-            else:
+                from w1therm import W1THERM
+                self.sensor = W1THERM(os.getenv('BALENASENSE_1WIRE_SENSOR_ID'))
                 self.readfrom = '1-wire'
                 print('Using 1-wire for readings (temperature only)')
+            except:
+                print('1-wire sensor not found')
 
         if self.readfrom == 'unset':
             try:
+                from sma import SMA
                 self.sensor = SMA(ip=os.getenv("BALENASENSE_SOLAR_IP"),
                                   user=os.getenv("BALENASENSE_SOLAR_USER"),
                                   password=os.getenv("BALENASENSE_SOLAR_PASSWORD"),
                                   sensor_id=os.getenv('BALENASENSE_SOLAR_SENSOR'))
-            except:
-                print('SMA solar connection not found')
-            else:
                 self.readfrom = 'sma-solar'
                 print('Using SMA solar connection at IP %s' % self.sensor.ip)
+            except:
+                print('SMA solar connection not found')
 
         # If this is still unset, no sensors were found; quit!
         if self.readfrom == 'unset':
@@ -107,15 +97,15 @@ class balenaSense():
 
     def apply_offsets(self, measurements):
         # Apply any offsets to the measurements before storing them in the database
-        if os.environ.get('BALENASENSE_TEMP_OFFSET') != None:
+        if os.environ.get('BALENASENSE_TEMP_OFFSET'):
             measurements[0]['fields']['temperature'] = measurements[0]['fields']['temperature'] + float(
                 os.environ['BALENASENSE_TEMP_OFFSET'])
 
-        if os.environ.get('BALENASENSE_HUM_OFFSET') != None:
+        if os.environ.get('BALENASENSE_HUM_OFFSET'):
             measurements[0]['fields']['humidity'] = measurements[0]['fields']['humidity'] + float(
                 os.environ['BALENASENSE_HUM_OFFSET'])
 
-        if os.environ.get('BALENASENSE_ALTITUDE') != None:
+        if os.environ.get('BALENASENSE_ALTITUDE'):
             # if there's an altitude set (in meters), then apply a barometric pressure offset
             altitude = float(os.environ['BALENASENSE_ALTITUDE'])
             measurements[0]['fields']['pressure'] = measurements[0]['fields']['pressure'] * (1 - (
