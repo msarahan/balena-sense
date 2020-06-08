@@ -8,6 +8,13 @@ import json
 
 import smbus
 
+from bme680 import BME680
+from enviroplushat import ENVIROPLUS
+from w1therm import W1THERM
+from sma import SMA
+from sense_hat_air_quality import get_readings
+from hts221 import HTS221
+
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
@@ -18,7 +25,6 @@ class balenaSense():
     def __init__(self):
         # First, check for enviro plus hat (since it also has BME on 0x76)
         try:
-            from enviroplushat import ENVIROPLUS
             self.bus.write_byte(0x23, 0)  # test if we can connect to ADS1015
             self.readfrom = 'enviroplus'
             self.sensor = ENVIROPLUS()
@@ -31,7 +37,6 @@ class balenaSense():
         # Next, check to see if there is a BME680 on the I2C bus
         if self.readfrom == 'unset':
             try:
-                from bme680 import BME680
                 self.bus.write_byte(0x76, 0)
                 print('BME680 found on 0x76')
                 self.sensor = BME680(self.readfrom)
@@ -56,8 +61,6 @@ class balenaSense():
                 print('Using Sense HAT for readings (no gas measurements)')
 
                 # Import the sense hat methods
-                from sense_hat_air_quality import get_readings
-                from hts221 import HTS221
                 self.sense_hat_reading = lambda: get_readings(HTS221())
             except:
                 print('Sense HAT not found')
@@ -65,7 +68,6 @@ class balenaSense():
         # Next, check if there is a 1-wire temperature sensor (e.g. DS18B20)
         if self.readfrom == 'unset':
             try:
-                from w1therm import W1THERM
                 self.sensor = W1THERM(os.getenv('BALENASENSE_1WIRE_SENSOR_ID'))
                 self.readfrom = '1-wire'
                 print('Using 1-wire for readings (temperature only)')
@@ -74,7 +76,6 @@ class balenaSense():
 
         if self.readfrom == 'unset':
             try:
-                from sma import SMA
                 self.sensor = SMA(ip=os.getenv("BALENASENSE_SOLAR_IP"),
                                   user=os.getenv("BALENASENSE_SOLAR_USER"),
                                   password=os.getenv("BALENASENSE_SOLAR_PASSWORD"),
