@@ -32,11 +32,11 @@
         },
         "overrides": []
       },
-      "fill": 1,
-      "fillGradient": 0,
+      "fill": 10,
+      "fillGradient": 10,
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 25,
+        "w": 7,
         "x": 0,
         "y": 0
       },
@@ -52,7 +52,7 @@
         "values": false
       },
       "lines": true,
-      "linewidth": 1,
+      "linewidth": 3,
       "nullPointMode": "null",
       "options": {
         "dataLinks": []
@@ -212,7 +212,7 @@
   },
   "time": {
     "from": "now/d",
-    "to": "now/d"
+    "to": "now"
   },
   "timepicker": {
     "collapse": false,
@@ -230,5 +230,5 @@
   "timezone": "browser",
   "title": "Solar generation",
   "uid": "cLV5GDCkz",
-  "version": 1
+  "version": 2
 }
