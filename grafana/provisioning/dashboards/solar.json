@@ -19,6 +19,7 @@
   "panels": [
     {
       "aliasColors": {
+        "Power": "blue",
         "balena-sense.cumulative_sum": "dark-orange",
         "balena-sense.mean": "dark-blue"
       },
@@ -35,7 +36,7 @@
       "fill": 10,
       "fillGradient": 10,
       "gridPos": {
-        "h": 25,
+        "h": 23,
         "w": 7,
         "x": 0,
         "y": 0
@@ -43,13 +44,15 @@
       "hiddenSeries": false,
       "id": 2,
       "legend": {
+        "alignAsTable": false,
         "avg": false,
         "current": false,
-        "max": false,
+        "max": true,
         "min": false,
-        "show": false,
+        "rightSide": false,
+        "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 3,
@@ -65,6 +68,10 @@
         {
           "alias": "balena-sense.cumulative_sum",
           "yaxis": 2
+        },
+        {
+          "alias": "Energy",
+          "yaxis": 2
         }
       ],
       "spaceLength": 10,
@@ -72,6 +79,7 @@
       "steppedLine": false,
       "targets": [
         {
+          "alias": "Power",
           "groupBy": [
             {
               "params": [
@@ -110,6 +118,7 @@
           "tags": []
         },
         {
+          "alias": "Energy",
           "groupBy": [
             {
               "params": [
@@ -155,12 +164,23 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "tz": "UTC"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
-      "timeRegions": [],
+      "timeRegions": [
+        {
+          "$$hashKey": "object:188",
+          "colorMode": "background6",
+          "fill": true,
+          "fillColor": "rgba(234, 112, 112, 0.12)",
+          "line": false,
+          "lineColor": "rgba(237, 46, 24, 0.60)",
+          "op": "time"
+        }
+      ],
       "timeShift": null,
       "title": "",
       "tooltip": {
@@ -180,16 +200,18 @@
       "yaxes": [
         {
           "$$hashKey": "object:317",
-          "format": "short",
-          "label": null,
+          "decimals": 0,
+          "format": "watt",
+          "label": "",
           "logBase": 1,
-          "max": null,
+          "max": "5100",
           "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:318",
-          "format": "short",
+          "decimals": null,
+          "format": "kwatth",
           "label": "",
           "logBase": 1,
           "max": "41",
@@ -212,7 +234,7 @@
   },
   "time": {
     "from": "now/d",
-    "to": "now"
+    "to": "now/d"
   },
   "timepicker": {
     "collapse": false,
@@ -227,7 +249,7 @@
     "status": "Stable",
     "type": "timepicker"
   },
-  "timezone": "browser",
+  "timezone": "America/Chicago",
   "title": "Solar generation",
   "uid": "cLV5GDCkz",
   "version": 2
