@@ -135,8 +135,11 @@ class SMA:
 
     def get_readings(self, sensor):
         if self.client.sma_sid is None:
-            _LOGGER.info("No session ID")
-            return
+            _LOGGER.info("No session ID - reconnecting")
+            self.client.new_session()
+            if self.client.sma_sid is None:
+                _LOGGER.info("No session ID - failed to connect")
+                return
         self.client.read(pysma.Sensors())
         if sensor not in pysma.Sensors():
             _LOGGER.warning("specified sensor '%s' is not available" % sensor)
