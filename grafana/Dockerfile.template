@@ -11,7 +11,8 @@ RUN install_packages \
       libfontconfig1 \
       ucf \
       jq \
-      wget
+      wget \
+      unzip
 
 RUN /usr/src/app/download.sh "%%BALENA_ARCH%%"
 
