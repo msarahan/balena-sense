@@ -81,7 +81,7 @@ class balenaSense():
                                   password=os.getenv("BALENASENSE_SOLAR_PASSWORD"),
                                   sensor_id=os.getenv('BALENASENSE_SOLAR_SENSOR'))
                 self.readfrom = 'sma-solar'
-                print('Using SMA solar connection at IP %s' % self.sensor.ip)
+                print('Using SMA solar connection at %s' % self.sensor.ip)
             except:
                 print('SMA solar connection not found')
 
