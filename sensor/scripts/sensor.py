@@ -125,7 +125,10 @@ class balenaSenseHTTP(BaseHTTPRequestHandler):
     def do_GET(self):
         self._set_headers()
         measurements = balenasense.sample()
-        self.wfile.write(json.dumps(measurements[0]['fields']).encode('UTF-8'))
+        if measurements:
+            self.wfile.write(json.dumps(measurements[0]['fields']).encode('UTF-8'))
+        else:
+            print("No active sensors... waiting until next measurement.")
 
     def do_HEAD(self):
         self._set_headers()

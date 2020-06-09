@@ -140,7 +140,7 @@ class SMA:
         self.client.read(pysma.Sensors())
         if sensor not in pysma.Sensors():
             _LOGGER.warning("specified sensor '%s' is not available" % sensor)
-            return []
+            return None
         else:
             return [{'measurement': 'sma-solar',
                     'fields': {
