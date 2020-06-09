@@ -18,4 +18,6 @@ RUN /usr/src/app/download.sh "%%BALENA_ARCH%%"
 
 RUN dpkg -i /tmp/grafana.deb && rm /tmp/grafana.deb
 
+RUN /usr/src/app/download_influx_plugin.sh
+
 CMD ["/bin/sh","/usr/src/app/entry.sh"]
