@@ -137,12 +137,15 @@ class SMA:
         if self.client.sma_sid is None:
             _LOGGER.info("No session ID")
             return
-        sensor_obj = pysma.Sensors()[sensor]
-        self.client.read([sensor_obj])
-        return [{'measurement': 'sma-solar',
-                'fields': {
-                    'power': float(sensor_obj.value),
-                }}]
+        self.client.read(pysma.Sensors())
+        if sensor not in pysma.Sensors():
+            _LOGGER.warning("specified sensor '%s' is not available" % sensor)
+            return []
+        else:
+            return [{'measurement': 'sma-solar',
+                    'fields': {
+                        'power': float(pysma.Sensors()[sensor].value or 0),
+                        }}]
 
 
 if __name__ == "__main__":
