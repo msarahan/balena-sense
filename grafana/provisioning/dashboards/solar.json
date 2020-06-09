@@ -36,7 +36,7 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 7,
+        "w": 12,
         "x": 0,
         "y": 0
       },
@@ -212,7 +212,7 @@
   },
   "time": {
     "from": "now/d",
-    "to": "now"
+    "to": "now/d"
   },
   "timepicker": {
     "collapse": false,
