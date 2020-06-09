@@ -141,15 +141,10 @@ class SMA:
                 _LOGGER.info("No session ID - failed to connect")
                 return
         self.client.read(self.sensors)
-        try:
-            measurement = [{'measurement': 'sma-solar',
-              'fields': {
-                  'power': float(self.sensors[sensor].value or 0),
-              }}]
-        except:
-            _LOGGER.warning("specified sensor '%s' is not available" % sensor)
-            measurement = None
-        return measurement
+        return [{'measurement': 'sma-solar',
+                 'fields': {
+                        'power': float(self.sensors[self.sensor].value or 0),
+                 }}]
 
 
 if __name__ == "__main__":
