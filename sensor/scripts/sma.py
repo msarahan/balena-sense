@@ -2,6 +2,7 @@ import json
 import os
 import logging
 import sys
+import time
 
 import requests
 import jmespath
@@ -139,6 +140,8 @@ class SMA:
             self.client.new_session()
             if self.client.sma_sid is None:
                 _LOGGER.info("No session ID - failed to connect")
+                _LOGGER.info("Sleeping for 10 minutes to allow session to expire.")
+                time.sleep(60 * 10)
                 return
         self.client.read(self.sensors)
         return [{'measurement': 'sma-solar',
