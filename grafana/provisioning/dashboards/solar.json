@@ -158,13 +158,14 @@
               },
               {
                 "params": [
-                  " *20 / 3600 /100"
+                  " *$__interval_ms / 3600000000"
                 ],
                 "type": "math"
               }
             ]
           ],
           "tags": [],
+          "tz": ""
         }
       ],
       "thresholds": [],
@@ -248,7 +249,7 @@
     "status": "Stable",
     "type": "timepicker"
   },
-  "timezone": "America/Chicago",
+  "timezone": "browser",
   "title": "Solar generation",
   "uid": "cLV5GDCkz",
   "version": 2
