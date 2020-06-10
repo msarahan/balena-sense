@@ -5,8 +5,8 @@ set -x
 fn="/usr/src/app/provisioning/datasources/influxdb-datasource.yml"
 cp $fn.base $fn
 cat <<EOT >>$fn
-  defaultBucket: ${INFLUX_BUCKET:-"balena-sense"}
-  organization: ${INFLUX_USER:-""}
+  defaultBucket: ${INFLUX_BUCKET:-""}
+  organization: ${INFLUX_ORG:-""}
   url: ${INFLUX_URL:-"http://influxdb:8086"}
   type: ${INFLUX_PLUGIN_TYPE:-"influxdb"}
 EOT
