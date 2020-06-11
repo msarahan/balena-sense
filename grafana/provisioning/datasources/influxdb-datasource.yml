@@ -1,0 +1,17 @@
+# config file version
+apiVersion: 1
+
+# list of datasources to insert/update depending
+# what's available in the database
+datasources:
+  # <string, required> name of the datasource. Required
+- name: InfluxDB
+  # <string, required> access mode. proxy or direct (Server or Browser in the UI). Required
+  access: proxy
+  version: 1
+  editable: false
+  isDefault: true
+  database: "balena-sense"
+  type: influxdb
+  orgId: 1
+  url: http://influxdb:8086
