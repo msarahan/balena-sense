@@ -11,5 +11,4 @@ datasources:
   version: 1
   editable: false
   isDefault: true
-  orgId: 1
   database: "balena-sense"
