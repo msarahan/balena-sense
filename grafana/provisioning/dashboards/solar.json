@@ -234,7 +234,7 @@
   },
   "time": {
     "from": "now/d+7h",
-    "to": "now/d-3h"
+    "to": "now/d-5h"
   },
   "timepicker": {
     "collapse": false,
